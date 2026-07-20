@@ -14,6 +14,7 @@ The backend is the runtime entry point and listens on `0.0.0.0:8080` by default.
 
 ```bash
 cargo build
+cargo clippy --workspace --all-targets
 cargo run -p backend
 ```
 
@@ -22,6 +23,9 @@ The frontend can be installed and built independently:
 ```bash
 cd frontend
 npm install
+npm run typecheck
+npm run lint
+npm run format:check
 npm run build
 ```
 
