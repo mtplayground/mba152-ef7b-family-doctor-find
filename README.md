@@ -35,6 +35,8 @@ npm run format:check
 npm run build
 ```
 
+The frontend data layer uses a typed fetch client and React Query hooks for city search, doctor listings, doctor detail, and anonymous report submissions. Set `VITE_API_BASE_URL` for local cross-port development; leave it unset for same-origin deployment.
+
 ## Directory Conventions
 
 Backend code should keep HTTP routing, service logic, data access, and configuration in separate modules as the implementation grows. Frontend code should organize reusable UI separately from feature-specific screens and API/query code.
