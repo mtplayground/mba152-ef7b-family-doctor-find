@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import type { AvailabilityStatus, DoctorListing } from '../api/types';
+import { ReportControls } from './ReportControls';
 
 interface DoctorResultsListProps {
   listings: DoctorListing[];
@@ -149,6 +150,9 @@ function DoctorResultRow({ listing }: { listing: DoctorListing }) {
           >
             Details
           </Link>
+        </div>
+        <div className="mt-4">
+          <ReportControls doctorId={listing.id} compact />
         </div>
       </div>
 
