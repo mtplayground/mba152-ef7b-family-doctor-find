@@ -42,6 +42,18 @@ pub struct ReportHistoryItem {
     pub submitted_at: DateTime<Utc>,
 }
 
+impl From<AvailabilityReport> for ReportHistoryItem {
+    fn from(report: AvailabilityReport) -> Self {
+        Self {
+            id: report.id,
+            report_kind: report.report_kind,
+            reported_status: report.reported_status,
+            note: report.note,
+            submitted_at: report.submitted_at,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, FromRow)]
 struct DoctorDetailRow {
     doctor_id: i64,
@@ -198,13 +210,7 @@ impl DoctorDetailRow {
             status,
             report_history: reports
                 .into_iter()
-                .map(|report| ReportHistoryItem {
-                    id: report.id,
-                    report_kind: report.report_kind,
-                    reported_status: report.reported_status,
-                    note: report.note,
-                    submitted_at: report.submitted_at,
-                })
+                .map(ReportHistoryItem::from)
                 .collect(),
         }
     }
