@@ -1,5 +1,5 @@
 use axum::{
-    extract::rejection::{JsonRejection, QueryRejection},
+    extract::rejection::{JsonRejection, PathRejection, QueryRejection},
     http::{StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
@@ -20,6 +20,10 @@ pub enum ApiError {
     Validation(ValidationError),
     NotFound {
         path: String,
+    },
+    ResourceNotFound {
+        code: &'static str,
+        message: String,
     },
     ServiceUnavailable {
         message: String,
@@ -55,6 +59,13 @@ impl ApiError {
             source: Box::new(source),
         }
     }
+
+    pub fn resource_not_found(code: &'static str, message: impl Into<String>) -> Self {
+        Self::ResourceNotFound {
+            code,
+            message: message.into(),
+        }
+    }
 }
 
 impl fmt::Display for ApiError {
@@ -63,6 +74,7 @@ impl fmt::Display for ApiError {
             Self::BadRequest { code, message } => write!(formatter, "{code}: {message}"),
             Self::Validation(error) => write!(formatter, "{error}"),
             Self::NotFound { path } => write!(formatter, "not found: {path}"),
+            Self::ResourceNotFound { code, message } => write!(formatter, "{code}: {message}"),
             Self::ServiceUnavailable { message, source } => {
                 write!(formatter, "{message}: {source}")
             }
@@ -88,6 +100,9 @@ impl IntoResponse for ApiError {
                 "not_found",
                 format!("No route found for {path}"),
             ),
+            Self::ResourceNotFound { code, message } => {
+                (StatusCode::NOT_FOUND, *code, message.clone())
+            }
             Self::ServiceUnavailable { message, .. } => (
                 StatusCode::SERVICE_UNAVAILABLE,
                 "service_unavailable",
@@ -124,6 +139,12 @@ impl From<JsonRejection> for ApiError {
 impl From<QueryRejection> for ApiError {
     fn from(rejection: QueryRejection) -> Self {
         Self::bad_request("invalid_query", rejection.to_string())
+    }
+}
+
+impl From<PathRejection> for ApiError {
+    fn from(rejection: PathRejection) -> Self {
+        Self::bad_request("invalid_path", rejection.to_string())
     }
 }
 

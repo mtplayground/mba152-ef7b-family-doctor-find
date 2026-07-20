@@ -1,4 +1,5 @@
 pub mod city_search;
+pub mod doctor_listings;
 pub mod error;
 pub mod health;
 pub mod validation;
@@ -16,6 +17,10 @@ pub fn router(state: AppState) -> Router {
         .route("/health", get(health::health_check))
         .route("/api/health", get(health::health_check))
         .route("/api/cities/search", get(city_search::search_cities))
+        .route(
+            "/api/cities/{city_slug}/doctors",
+            get(doctor_listings::list_by_city),
+        )
         .fallback(error::not_found)
         .with_state(state)
 }
