@@ -4,6 +4,7 @@ pub mod doctor_detail;
 pub mod doctor_listings;
 pub mod error;
 pub mod health;
+pub mod status_change;
 pub mod validation;
 
 use axum::{routing::get, Router};
@@ -30,6 +31,10 @@ pub fn router(state: AppState) -> Router {
         .route(
             "/api/doctors/{doctor_id}/confirm-accepting",
             axum::routing::post(confirm_accepting::confirm_accepting),
+        )
+        .route(
+            "/api/doctors/{doctor_id}/status-change",
+            axum::routing::post(status_change::report_status_change),
         )
         .fallback(error::not_found)
         .with_state(state)
