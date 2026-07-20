@@ -1,4 +1,5 @@
 pub mod city_search;
+pub mod confirm_accepting;
 pub mod doctor_detail;
 pub mod doctor_listings;
 pub mod error;
@@ -25,6 +26,10 @@ pub fn router(state: AppState) -> Router {
         .route(
             "/api/doctors/{doctor_id}",
             get(doctor_detail::get_doctor_detail),
+        )
+        .route(
+            "/api/doctors/{doctor_id}/confirm-accepting",
+            axum::routing::post(confirm_accepting::confirm_accepting),
         )
         .fallback(error::not_found)
         .with_state(state)
