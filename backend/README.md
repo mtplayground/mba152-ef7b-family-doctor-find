@@ -12,6 +12,12 @@ Rust/Axum API server for the family doctor finder.
 
 The server defaults to `0.0.0.0:8080`. Override with `BIND_ADDRESS` when needed.
 
+## REST Baseline
+
+- `GET /health` and `GET /api/health` return JSON health status and verify PostgreSQL connectivity.
+- API errors are returned as `{ "error": { "code": "...", "message": "..." } }`.
+- Request validation should use the `ValidatedJson<T>` extractor plus the `ValidateRequest` trait for JSON payloads.
+
 ## Database
 
 Set `DATABASE_URL` before running the backend. The URL must point to PostgreSQL.

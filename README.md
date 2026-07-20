@@ -20,6 +20,7 @@ cargo run -p backend
 ```
 
 Backend startup connects to PostgreSQL through `DATABASE_URL` and runs embedded sqlx migrations from `backend/migrations`.
+The REST baseline exposes `GET /health` and `GET /api/health` for health checks.
 
 Configuration is read from environment variables. Copy `.env.example` for local values, but keep real secrets out of Git.
 

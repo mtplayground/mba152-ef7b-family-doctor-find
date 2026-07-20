@@ -1,12 +1,9 @@
 mod config;
 mod db;
+mod http;
 
-use axum::{extract::State, routing::get, Router};
-
-#[derive(Clone)]
-struct AppState {
-    pool: db::DbPool,
-}
+use axum::Router;
+use http::AppState;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -42,13 +39,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn app(pool: db::DbPool) -> Router {
-    Router::new()
-        .route("/", get(root))
-        .with_state(AppState { pool })
-}
-
-async fn root(State(state): State<AppState>) -> &'static str {
-    let _database_pool_is_open = !state.pool.is_closed();
-
-    "Family Doctor Finder backend"
+    http::router(AppState { pool })
 }
