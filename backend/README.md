@@ -33,7 +33,7 @@ The backend runs embedded sqlx migrations on startup. To run migrations manually
 sqlx migrate run --source backend/migrations
 ```
 
-The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Matching sqlx row models live in `src/db/city.rs`.
+The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Clinics and family doctors are modeled separately so addresses and contact details stay attached to clinic locations. Matching sqlx row models live in `src/db/`.
 
 ## Configuration
 
