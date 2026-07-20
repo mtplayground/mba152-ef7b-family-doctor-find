@@ -5,7 +5,9 @@ React single-page application for the family doctor finder.
 ## Conventions
 
 - `src/main.tsx` mounts the React application.
-- `src/App.tsx` owns the initial route-level composition until routing is introduced.
+- `src/App.tsx` owns the router provider.
+- `src/app/` owns app shell and routing.
+- `src/pages/` owns route-level page components.
 - Future shared UI belongs in `src/components/`.
 - Future API client and query hooks belong in `src/api/`.
 - Future feature screens belong in `src/features/`.
