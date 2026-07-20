@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   MapContainer,
   Marker,
@@ -120,6 +121,12 @@ export function DoctorResultsMap({
                     <span>{item.listing.clinic.name}</span>
                     <span>{item.listing.area.name}</span>
                     <span>{recencyLabel(item.listing)}</span>
+                    <Link
+                      to={`/doctors/${item.listing.id}`}
+                      className="font-semibold text-civic-700"
+                    >
+                      Details
+                    </Link>
                   </div>
                 </Popup>
               </Marker>
