@@ -52,3 +52,35 @@
     text-decoration: none;
   }
 }
+
+@layer components {
+  .doctor-results-map {
+    min-height: 520px;
+    width: 100%;
+  }
+
+  .doctor-map-marker {
+    align-items: center;
+    border: 2px solid white;
+    border-radius: 9999px;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+    display: flex;
+    font-size: 0.75rem;
+    font-weight: 700;
+    justify-content: center;
+  }
+
+  .doctor-map-marker span {
+    line-height: 1;
+  }
+
+  .doctor-map-marker-accepting {
+    background: theme('colors.civic.700');
+    color: white;
+  }
+
+  .doctor-map-marker-muted {
+    background: theme('colors.ink.700');
+    color: white;
+  }
+}
