@@ -4,6 +4,8 @@ use sqlx::{
     PgPool,
 };
 
+pub mod city;
+
 static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
 
 pub type DbPool = PgPool;

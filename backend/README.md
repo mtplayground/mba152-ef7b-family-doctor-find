@@ -33,6 +33,8 @@ The backend runs embedded sqlx migrations on startup. To run migrations manually
 sqlx migrate run --source backend/migrations
 ```
 
+The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Matching sqlx row models live in `src/db/city.rs`.
+
 ## Configuration
 
 The backend reads configuration from environment variables. See `.env.example` at the repository root for example values.
