@@ -3,12 +3,18 @@ import { useDoctorListings } from '../api/hooks';
 import type { CitySearchResult } from '../api/types';
 import { CityTypeahead } from '../components/CityTypeahead';
 import { DoctorResultsList } from '../components/DoctorResultsList';
+import { DoctorResultsMap } from '../components/DoctorResultsMap';
+import {
+  ResultsViewToggle,
+  type ResultsViewMode,
+} from '../components/ResultsViewToggle';
 
 export function ResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCitySlug = searchParams.get('city') ?? '';
   const selectedAreaSlug = searchParams.get('area') ?? undefined;
   const selectedLabel = searchParams.get('label') ?? '';
+  const viewMode = parseViewMode(searchParams.get('view'));
   const listings = useDoctorListings({
     citySlug: selectedCitySlug,
     areaSlug: selectedAreaSlug,
@@ -24,6 +30,12 @@ export function ResultsPage() {
       params.set('area', result.areaSlug);
     }
 
+    setSearchParams(params);
+  }
+
+  function handleViewChange(nextViewMode: ResultsViewMode) {
+    const params = new URLSearchParams(searchParams);
+    params.set('view', nextViewMode);
     setSearchParams(params);
   }
 
@@ -48,13 +60,32 @@ export function ResultsPage() {
         </div>
       </section>
 
-      <DoctorResultsList
-        selectedLabel={selectedLabel}
-        selectedCitySlug={selectedCitySlug}
-        listings={listings.data?.listings ?? []}
-        isLoading={listings.isPending && selectedCitySlug.length > 0}
-        error={listings.error}
-      />
+      <div className="flex justify-end">
+        <ResultsViewToggle value={viewMode} onChange={handleViewChange} />
+      </div>
+
+      {viewMode === 'map' ? (
+        <DoctorResultsMap
+          selectedLabel={selectedLabel}
+          selectedCitySlug={selectedCitySlug}
+          city={listings.data?.city}
+          listings={listings.data?.listings ?? []}
+          isLoading={listings.isPending && selectedCitySlug.length > 0}
+          error={listings.error}
+        />
+      ) : (
+        <DoctorResultsList
+          selectedLabel={selectedLabel}
+          selectedCitySlug={selectedCitySlug}
+          listings={listings.data?.listings ?? []}
+          isLoading={listings.isPending && selectedCitySlug.length > 0}
+          error={listings.error}
+        />
+      )}
     </div>
   );
+}
+
+function parseViewMode(value: string | null): ResultsViewMode {
+  return value === 'map' ? 'map' : 'list';
 }
