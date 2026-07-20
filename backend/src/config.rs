@@ -6,6 +6,8 @@ const DEFAULT_NOMINATIM_BASE_URL: &str = "https://nominatim.openstreetmap.org";
 const DEFAULT_NOMINATIM_USER_AGENT: &str = "family-doctor-finder/0.1";
 const DEFAULT_RATE_LIMIT_WINDOW_SECS: u64 = 60;
 const DEFAULT_RATE_LIMIT_MAX_REQUESTS: u32 = 30;
+const DEFAULT_REPORT_REPEAT_WINDOW_SECS: u64 = 3600;
+const DEFAULT_REPORT_REPEAT_MAX_REQUESTS: u32 = 1;
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
@@ -17,6 +19,8 @@ pub struct AppConfig {
     pub nominatim_user_agent: String,
     pub rate_limit_window_secs: u64,
     pub rate_limit_max_requests: u32,
+    pub report_repeat_window_secs: u64,
+    pub report_repeat_max_requests: u32,
 }
 
 #[derive(Debug)]
@@ -61,6 +65,16 @@ impl AppConfig {
             env::var("RATE_LIMIT_MAX_REQUESTS").ok(),
             DEFAULT_RATE_LIMIT_MAX_REQUESTS,
         )?;
+        let report_repeat_window_secs = positive_u64(
+            "REPORT_REPEAT_WINDOW_SECS",
+            env::var("REPORT_REPEAT_WINDOW_SECS").ok(),
+            DEFAULT_REPORT_REPEAT_WINDOW_SECS,
+        )?;
+        let report_repeat_max_requests = positive_u32(
+            "REPORT_REPEAT_MAX_REQUESTS",
+            env::var("REPORT_REPEAT_MAX_REQUESTS").ok(),
+            DEFAULT_REPORT_REPEAT_MAX_REQUESTS,
+        )?;
 
         Ok(Self {
             database_url,
@@ -71,6 +85,8 @@ impl AppConfig {
             nominatim_user_agent,
             rate_limit_window_secs,
             rate_limit_max_requests,
+            report_repeat_window_secs,
+            report_repeat_max_requests,
         })
     }
 }

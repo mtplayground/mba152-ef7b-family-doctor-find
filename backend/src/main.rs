@@ -25,21 +25,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         nominatim_user_agent = %config.nominatim_user_agent.as_str(),
         rate_limit_window_secs = config.rate_limit_window_secs,
         rate_limit_max_requests = config.rate_limit_max_requests,
+        report_repeat_window_secs = config.report_repeat_window_secs,
+        report_repeat_max_requests = config.report_repeat_max_requests,
         "configuration loaded",
     );
 
     let pool = db::connect(&config.database_url).await?;
     db::run_migrations(&pool).await?;
+    let rate_limiter = http::rate_limit::RateLimiter::new(
+        config.rate_limit_window_secs,
+        config.rate_limit_max_requests,
+        config.report_repeat_window_secs,
+        config.report_repeat_max_requests,
+    );
 
     let listener = tokio::net::TcpListener::bind(config.bind_address).await?;
 
     tracing::info!(address = %config.bind_address, "backend listening");
 
-    axum::serve(listener, app(pool)).await?;
+    axum::serve(listener, app(pool, rate_limiter)).await?;
 
     Ok(())
 }
 
-fn app(pool: db::DbPool) -> Router {
-    http::router(AppState { pool })
+fn app(pool: db::DbPool, rate_limiter: http::rate_limit::RateLimiter) -> Router {
+    http::router(AppState { pool, rate_limiter })
 }
