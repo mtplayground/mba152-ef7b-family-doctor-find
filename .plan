@@ -1,0 +1,46 @@
+Architecture plan for the family doctor finder
+
+Product scope
+- Build a public-service family doctor finder for Canadian cities/areas.
+- Users search by city/area, browse family doctor and clinic listings, see current accepting status with recency, view detail/report history, and submit anonymous confirmations or status-change reports.
+
+Repository structure
+- Root: shared README, .env.example, build/deployment scripts, formatting/lint config entry points.
+- backend/: Rust Axum API server.
+- backend/src/main.rs: server bootstrap, tracing, config load, router wiring.
+- backend/src/config.rs: environment variables for DATABASE_URL, bind address, public/CORS origin, Nominatim endpoint, and rate-limit settings.
+- backend/src/http/: routes, request extractors, validation, response/error mapping.
+- backend/src/services/: city search, listings, report submission, status/recency derivation, geocoding orchestration.
+- backend/src/db/: sqlx pool setup, repository functions, database models.
+- backend/migrations/: sqlx migrations for cities/areas, doctors/clinics, availability reports, and seed data where appropriate.
+- frontend/: React SPA.
+- frontend/src/app/: router, app shell, providers, query client.
+- frontend/src/api/: typed API client and React Query hooks.
+- frontend/src/features/search/: home search and city typeahead.
+- frontend/src/features/results/: list view, map/list toggle, recency indicators, report controls.
+- frontend/src/features/detail/: doctor detail view and report history.
+- frontend/src/components/: reusable UI primitives and state components.
+- frontend/src/types/: shared frontend DTO types matching API responses.
+
+Shared contracts
+- Keep API DTOs explicit and stable: CitySummary, DoctorListingSummary, DoctorDetail, AvailabilityReport, DerivedAvailabilityStatus, SubmissionResult, ApiError.
+- Prefer serde-compatible Rust response structs as the source of truth and mirror them in TypeScript manually until a later issue adds generation.
+- Dates/times should be UTC ISO-8601 at the API boundary; frontend derives display text such as "confirmed X days ago".
+- Listing status is derived from report history rather than stored as the authoritative fact. Store immutable reports and optionally cache denormalized last-confirmed metadata only if needed.
+
+Issue dependencies and implementation order
+- Foundation: #1 repository layout, #2 TypeScript/lint/format, #3 PostgreSQL/sqlx migrations, #4 environment config, #5 Axum baseline, #6 React app shell.
+- Data layer: #7 cities/areas, #8 doctors/clinics, #9 availability reports, #10 status/recency service, #11 seed data.
+- Backend API: #12 city typeahead, #13 Nominatim geocoding, #14 listings by city, #15 doctor detail, #16 confirm accepting, #17 report status change, #18 rate limiting/abuse safeguards.
+- Frontend integration: #19 typed API client/hooks, #20 home search, #21 results list, #22 Leaflet/OSM map, #23 detail view, #24 one-tap controls, #25 submission feedback and optimistic recency.
+- Hardening: #26 smoke test, #27 empty/sparse/error states, #28 self-hosted deployment preparation.
+
+Key design decisions
+- Use Axum with tower middleware, sqlx for async PostgreSQL access, and migrations committed under backend/migrations.
+- Keep anonymous submissions append-only in availability_reports for auditability and to avoid destructive status edits.
+- Derive accepting/recency in a backend service used by both list and detail endpoints, so frontend views stay consistent.
+- Use Nominatim only through a backend client with caching and graceful fallback; do not block core listing pages on live geocoding success.
+- Respect Ideavibes proxy headers: use X-Forwarded-Host/X-Forwarded-Proto or ALLOWED_CORS_ORIGIN for public-origin checks, never raw Host alone.
+- Keep the React UI utilitarian and civic: accessible search-first entry, scannable results, clear recency/status states, and compact controls for repeated use.
+- Use Leaflet with OpenStreetMap tiles for the map view while keeping the list view the primary reliable fallback.
+- Add rate limiting before anonymous report endpoints are exposed in the UI.
