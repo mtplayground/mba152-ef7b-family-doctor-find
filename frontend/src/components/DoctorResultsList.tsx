@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import type { AvailabilityStatus, DoctorListing } from '../api/types';
 
@@ -101,7 +102,12 @@ function DoctorResultRow({ listing }: { listing: DoctorListing }) {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h3 className="text-lg font-semibold leading-snug text-ink-900">
-              {listing.fullName}
+              <Link
+                to={`/doctors/${listing.id}`}
+                className="transition hover:text-civic-700"
+              >
+                {listing.fullName}
+              </Link>
               {listing.credentials ? (
                 <span className="ml-2 text-sm font-medium text-ink-500">
                   {listing.credentials}
@@ -137,6 +143,12 @@ function DoctorResultRow({ listing }: { listing: DoctorListing }) {
               Profile
             </a>
           ) : null}
+          <Link
+            to={`/doctors/${listing.id}`}
+            className="font-semibold text-civic-700 hover:text-civic-900"
+          >
+            Details
+          </Link>
         </div>
       </div>
 
