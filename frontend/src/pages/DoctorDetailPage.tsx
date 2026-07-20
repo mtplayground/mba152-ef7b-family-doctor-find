@@ -7,6 +7,7 @@ import type {
   DoctorDetail,
   ReportHistoryItem,
 } from '../api/types';
+import { ReportControls } from '../components/ReportControls';
 
 export function DoctorDetailPage() {
   const navigate = useNavigate();
@@ -155,6 +156,9 @@ function DoctorDetailContent({
               )}
             />
           </dl>
+          <div className="mt-6">
+            <ReportControls doctorId={detail.id} />
+          </div>
         </section>
       </div>
 

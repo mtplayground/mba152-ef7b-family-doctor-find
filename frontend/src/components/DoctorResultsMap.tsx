@@ -11,6 +11,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ApiError } from '../api/client';
 import type { DoctorListing, ListingCity } from '../api/types';
+import { ReportControls } from './ReportControls';
 
 interface DoctorResultsMapProps {
   listings: DoctorListing[];
@@ -127,6 +128,9 @@ export function DoctorResultsMap({
                     >
                       Details
                     </Link>
+                    <div className="mt-2">
+                      <ReportControls doctorId={item.listing.id} compact />
+                    </div>
                   </div>
                 </Popup>
               </Marker>
