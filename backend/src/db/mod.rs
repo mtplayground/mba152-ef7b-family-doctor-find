@@ -4,6 +4,7 @@ use sqlx::{
     PgPool,
 };
 
+pub mod availability_report;
 pub mod city;
 pub mod doctor;
 
