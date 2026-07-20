@@ -5,6 +5,12 @@ edition = "2021"
 
 [dependencies]
 axum = "0.8"
+sqlx = { version = "0.8", features = [
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls-ring-native-roots",
+] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
