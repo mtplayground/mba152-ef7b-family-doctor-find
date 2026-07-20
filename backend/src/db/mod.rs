@@ -5,6 +5,7 @@ use sqlx::{
 };
 
 pub mod city;
+pub mod doctor;
 
 static MIGRATOR: Migrator = sqlx::migrate!("./migrations");
 
