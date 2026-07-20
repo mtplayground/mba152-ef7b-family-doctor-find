@@ -1,5 +1,6 @@
 target/
 node_modules/
+frontend/dist/
 .gh_token
 .database_url
 .task_id
@@ -10,3 +11,4 @@ node_modules/
 .pipeline-state.json
 .gitkeep
 .progress
+.env.production
