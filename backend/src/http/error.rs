@@ -1,5 +1,5 @@
 use axum::{
-    extract::rejection::JsonRejection,
+    extract::rejection::{JsonRejection, QueryRejection},
     http::{StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
@@ -118,6 +118,12 @@ impl From<ValidationError> for ApiError {
 impl From<JsonRejection> for ApiError {
     fn from(rejection: JsonRejection) -> Self {
         Self::bad_request("invalid_json", rejection.to_string())
+    }
+}
+
+impl From<QueryRejection> for ApiError {
+    fn from(rejection: QueryRejection) -> Self {
+        Self::bad_request("invalid_query", rejection.to_string())
     }
 }
 
