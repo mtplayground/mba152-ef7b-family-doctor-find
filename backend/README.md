@@ -16,6 +16,7 @@ The server defaults to `0.0.0.0:8080`. Override with `BIND_ADDRESS` when needed.
 
 - `GET /health` and `GET /api/health` return JSON health status and verify PostgreSQL connectivity.
 - `GET /api/cities/search?q=<text>&limit=<n>` returns city and area matches for typeahead inputs.
+- `GET /api/cities/{city_slug}/doctors?area=<area_slug>&limit=<n>` returns doctor listings with derived status and recency.
 - API errors are returned as `{ "error": { "code": "...", "message": "..." } }`.
 - Request validation should use the `ValidatedJson<T>` extractor plus the `ValidateRequest` trait for JSON payloads.
 
