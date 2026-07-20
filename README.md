@@ -13,10 +13,13 @@ A public-service directory for finding family doctors by Canadian city or area, 
 The backend is the runtime entry point and listens on `0.0.0.0:8080` by default.
 
 ```bash
+export DATABASE_URL=$(cat /workspace/.database_url)
 cargo build
 cargo clippy --workspace --all-targets
 cargo run -p backend
 ```
+
+Backend startup connects to PostgreSQL through `DATABASE_URL` and runs embedded sqlx migrations from `backend/migrations`.
 
 The frontend can be installed and built independently:
 

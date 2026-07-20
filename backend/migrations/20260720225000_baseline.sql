@@ -1,0 +1,2 @@
+-- Baseline migration for the sqlx/PostgreSQL workflow.
+-- Schema tables are introduced by the issue-specific data model migrations.
