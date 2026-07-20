@@ -6,7 +6,7 @@ Rust/Axum API server for the family doctor finder.
 
 - `src/main.rs` owns process startup, logging, address binding, and top-level router wiring.
 - Future HTTP handlers should live under `src/http/`.
-- Future business logic should live under `src/services/`.
+- Business logic lives under `src/services/`.
 - PostgreSQL access and sqlx models live under `src/db/`.
 - Migrations live under `migrations/` and are embedded in the backend binary.
 
@@ -33,7 +33,7 @@ The backend runs embedded sqlx migrations on startup. To run migrations manually
 sqlx migrate run --source backend/migrations
 ```
 
-The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Clinics and family doctors are modeled separately so addresses and contact details stay attached to clinic locations. Availability report history is stored per family doctor listing for later status and recency derivation. Matching sqlx row models live in `src/db/`.
+The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Clinics and family doctors are modeled separately so addresses and contact details stay attached to clinic locations. Availability report history is stored per family doctor listing, with status and recency derivation in `src/services/listing_status.rs`. Matching sqlx row models live in `src/db/`.
 
 ## Configuration
 

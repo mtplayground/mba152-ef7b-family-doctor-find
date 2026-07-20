@@ -1,6 +1,7 @@
 mod config;
 mod db;
 mod http;
+mod services;
 
 use axum::Router;
 use http::AppState;
