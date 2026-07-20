@@ -26,3 +26,21 @@ The backend runs embedded sqlx migrations on startup. To run migrations manually
 ```bash
 sqlx migrate run --source backend/migrations
 ```
+
+## Configuration
+
+The backend reads configuration from environment variables. See `.env.example` at the repository root for example values.
+
+Required:
+
+- `DATABASE_URL`
+
+Optional with defaults:
+
+- `BIND_ADDRESS`
+- `ALLOWED_CORS_ORIGIN`
+- `OSM_TILE_URL_TEMPLATE`
+- `NOMINATIM_BASE_URL`
+- `NOMINATIM_USER_AGENT`
+- `RATE_LIMIT_WINDOW_SECS`
+- `RATE_LIMIT_MAX_REQUESTS`

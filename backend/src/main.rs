@@ -1,7 +1,7 @@
+mod config;
 mod db;
 
 use axum::{extract::State, routing::get, Router};
-use std::net::SocketAddr;
 
 #[derive(Clone)]
 struct AppState {
@@ -17,21 +17,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .init();
 
-    let database_url = std::env::var("DATABASE_URL").map_err(|err| {
-        std::io::Error::new(
-            std::io::ErrorKind::NotFound,
-            format!("DATABASE_URL must be set for PostgreSQL access: {err}"),
-        )
-    })?;
-    let pool = db::connect(&database_url).await?;
+    let config = config::AppConfig::from_env()?;
+    tracing::info!(
+        bind_address = %config.bind_address,
+        allowed_cors_origin = ?config.allowed_cors_origin.as_deref(),
+        osm_tile_url_template = %config.osm_tile_url_template.as_str(),
+        nominatim_base_url = %config.nominatim_base_url.as_str(),
+        nominatim_user_agent = %config.nominatim_user_agent.as_str(),
+        rate_limit_window_secs = config.rate_limit_window_secs,
+        rate_limit_max_requests = config.rate_limit_max_requests,
+        "configuration loaded",
+    );
+
+    let pool = db::connect(&config.database_url).await?;
     db::run_migrations(&pool).await?;
 
-    let bind_address =
-        std::env::var("BIND_ADDRESS").unwrap_or_else(|_| "0.0.0.0:8080".to_string());
-    let address: SocketAddr = bind_address.parse()?;
-    let listener = tokio::net::TcpListener::bind(address).await?;
+    let listener = tokio::net::TcpListener::bind(config.bind_address).await?;
 
-    tracing::info!(%address, "backend listening");
+    tracing::info!(address = %config.bind_address, "backend listening");
 
     axum::serve(listener, app(pool)).await?;
 

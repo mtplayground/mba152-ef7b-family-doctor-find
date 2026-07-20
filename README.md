@@ -21,6 +21,8 @@ cargo run -p backend
 
 Backend startup connects to PostgreSQL through `DATABASE_URL` and runs embedded sqlx migrations from `backend/migrations`.
 
+Configuration is read from environment variables. Copy `.env.example` for local values, but keep real secrets out of Git.
+
 The frontend can be installed and built independently:
 
 ```bash
