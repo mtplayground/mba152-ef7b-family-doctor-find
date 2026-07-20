@@ -22,7 +22,7 @@ cargo run -p backend
 Backend startup connects to PostgreSQL through `DATABASE_URL` and runs embedded sqlx migrations from `backend/migrations`.
 The REST baseline exposes `GET /health` and `GET /api/health` for health checks. City and doctor reads are available through `GET /api/cities/search`, `GET /api/cities/{city_slug}/doctors`, and `GET /api/doctors/{doctor_id}`. Availability reports can be submitted with `POST /api/doctors/{doctor_id}/confirm-accepting` and `POST /api/doctors/{doctor_id}/status-change`.
 
-Configuration is read from environment variables. Copy `.env.example` for local values, but keep real secrets out of Git.
+Configuration is read from environment variables. Copy `.env.example` for local values, but keep real secrets out of Git. Anonymous submission endpoints apply per-client rate limits and same-listing repeat-report safeguards from the rate-limit environment settings.
 
 The frontend can be installed and built independently:
 

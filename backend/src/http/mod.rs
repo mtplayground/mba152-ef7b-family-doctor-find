@@ -4,6 +4,7 @@ pub mod doctor_detail;
 pub mod doctor_listings;
 pub mod error;
 pub mod health;
+pub mod rate_limit;
 pub mod status_change;
 pub mod validation;
 
@@ -12,6 +13,7 @@ use axum::{routing::get, Router};
 #[derive(Clone)]
 pub struct AppState {
     pub pool: crate::db::DbPool,
+    pub rate_limiter: rate_limit::RateLimiter,
 }
 
 pub fn router(state: AppState) -> Router {

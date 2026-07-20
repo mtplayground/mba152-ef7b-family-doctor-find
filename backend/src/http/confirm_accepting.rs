@@ -1,5 +1,6 @@
 use axum::{
     extract::{rejection::PathRejection, Path, State},
+    http::HeaderMap,
     Json,
 };
 use chrono::Utc;
@@ -8,6 +9,7 @@ use serde::Deserialize;
 use crate::{
     http::{
         error::ApiError,
+        rate_limit,
         validation::{ValidatedJson, ValidateRequest, ValidationError},
         AppState,
     },
@@ -54,10 +56,18 @@ impl ValidateRequest for ConfirmAcceptingRequest {
 pub async fn confirm_accepting(
     State(state): State<AppState>,
     path: Result<Path<ConfirmAcceptingPath>, PathRejection>,
+    headers: HeaderMap,
     ValidatedJson(request): ValidatedJson<ConfirmAcceptingRequest>,
 ) -> Result<Json<ConfirmAcceptingResult>, ApiError> {
     let Path(path) = path?;
     let doctor_id = validate_doctor_id(path.doctor_id)?;
+    let client_id = rate_limit::client_identifier(&headers);
+    state
+        .rate_limiter
+        .check_listing_report(&client_id, doctor_id)
+        .await?;
+    state.rate_limiter.check_submission(&client_id).await?;
+
     let submission = ConfirmAcceptingSubmission {
         note: request.note.map(|note| note.trim().to_string()),
     };

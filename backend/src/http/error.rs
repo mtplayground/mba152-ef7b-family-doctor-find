@@ -7,7 +7,7 @@ use axum::{
 use serde::Serialize;
 use std::{error::Error, fmt};
 
-use crate::http::validation::ValidationError;
+use crate::http::{rate_limit::RateLimitError, validation::ValidationError};
 
 type BoxError = Box<dyn Error + Send + Sync>;
 
@@ -24,6 +24,9 @@ pub enum ApiError {
     ResourceNotFound {
         code: &'static str,
         message: String,
+    },
+    RateLimited {
+        retry_after_secs: u64,
     },
     ServiceUnavailable {
         message: String,
@@ -75,6 +78,9 @@ impl fmt::Display for ApiError {
             Self::Validation(error) => write!(formatter, "{error}"),
             Self::NotFound { path } => write!(formatter, "not found: {path}"),
             Self::ResourceNotFound { code, message } => write!(formatter, "{code}: {message}"),
+            Self::RateLimited { retry_after_secs } => {
+                write!(formatter, "rate_limited: retry after {retry_after_secs} seconds")
+            }
             Self::ServiceUnavailable { message, source } => {
                 write!(formatter, "{message}: {source}")
             }
@@ -103,6 +109,11 @@ impl IntoResponse for ApiError {
             Self::ResourceNotFound { code, message } => {
                 (StatusCode::NOT_FOUND, *code, message.clone())
             }
+            Self::RateLimited { retry_after_secs } => (
+                StatusCode::TOO_MANY_REQUESTS,
+                "rate_limited",
+                format!("Too many submissions; try again in {retry_after_secs} seconds"),
+            ),
             Self::ServiceUnavailable { message, .. } => (
                 StatusCode::SERVICE_UNAVAILABLE,
                 "service_unavailable",
@@ -145,6 +156,14 @@ impl From<QueryRejection> for ApiError {
 impl From<PathRejection> for ApiError {
     fn from(rejection: PathRejection) -> Self {
         Self::bad_request("invalid_path", rejection.to_string())
+    }
+}
+
+impl From<RateLimitError> for ApiError {
+    fn from(error: RateLimitError) -> Self {
+        Self::RateLimited {
+            retry_after_secs: error.retry_after_secs,
+        }
     }
 }
 
