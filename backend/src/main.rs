@@ -1,6 +1,7 @@
 mod config;
 mod db;
 mod http;
+mod integrations;
 mod services;
 
 use axum::Router;

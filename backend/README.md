@@ -34,7 +34,7 @@ The backend runs embedded sqlx migrations on startup. To run migrations manually
 sqlx migrate run --source backend/migrations
 ```
 
-The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Clinics and family doctors are modeled separately so addresses and contact details stay attached to clinic locations. Availability report history is stored per family doctor listing, with status and recency derivation in `src/services/listing_status.rs`. Launch seed data adds a small set of Canadian cities and clearly labeled sample listings. Matching sqlx row models live in `src/db/`.
+The initial domain schema defines Canadian `cities` and `city_areas` tables for search entry points and listing grouping. Clinics and family doctors are modeled separately so addresses and contact details stay attached to clinic locations. Availability report history is stored per family doctor listing, with status and recency derivation in `src/services/listing_status.rs`. Launch seed data adds a small set of Canadian cities and clearly labeled sample listings. Nominatim geocode results are cached in PostgreSQL to reduce external requests. Matching sqlx row models live in `src/db/`.
 
 ## Configuration
 
