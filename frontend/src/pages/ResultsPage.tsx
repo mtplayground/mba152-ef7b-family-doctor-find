@@ -72,6 +72,7 @@ export function ResultsPage() {
           listings={listings.data?.listings ?? []}
           isLoading={listings.isPending && selectedCitySlug.length > 0}
           error={listings.error}
+          onRetry={() => void listings.refetch()}
         />
       ) : (
         <DoctorResultsList
@@ -80,6 +81,7 @@ export function ResultsPage() {
           listings={listings.data?.listings ?? []}
           isLoading={listings.isPending && selectedCitySlug.length > 0}
           error={listings.error}
+          onRetry={() => void listings.refetch()}
         />
       )}
     </div>

@@ -20,6 +20,7 @@ interface DoctorResultsMapProps {
   selectedLabel: string;
   selectedCitySlug: string;
   city: ListingCity | undefined;
+  onRetry: () => void;
 }
 
 interface MappedListing {
@@ -34,6 +35,7 @@ export function DoctorResultsMap({
   selectedLabel,
   selectedCitySlug,
   city,
+  onRetry,
 }: DoctorResultsMapProps) {
   const mappedListings = useMemo(() => getMappedListings(listings), [listings]);
   const center = getMapCenter(mappedListings, city);
@@ -41,12 +43,15 @@ export function DoctorResultsMap({
   if (!selectedCitySlug) {
     return (
       <section className="rounded-lg border border-dashed border-civic-100 bg-civic-50 p-6 sm:p-8">
+        <p className="text-sm font-semibold uppercase text-civic-700">
+          No city selected
+        </p>
         <h2 className="text-xl font-semibold text-civic-900">
-          Start with a city
+          Search first to map listings.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-700">
-          Search suggestions include launch cities and neighbourhood areas. Pick
-          one to map matching family doctor listings.
+          Use the search field above to choose a city or area. Mapped results
+          appear when clinic coordinates are available.
         </p>
       </section>
     );
@@ -54,10 +59,16 @@ export function DoctorResultsMap({
 
   if (isLoading) {
     return (
-      <section className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8">
+      <section
+        className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8"
+        aria-busy="true"
+      >
         <h2 className="text-xl font-semibold text-ink-900">
           Loading map for {selectedLabel || selectedCitySlug}
         </h2>
+        <p className="mt-2 text-sm text-ink-600">
+          Loading clinic coordinates and current status reports.
+        </p>
         <div className="mt-6 h-[520px] animate-pulse rounded-lg bg-surface-muted" />
       </section>
     );
@@ -74,6 +85,13 @@ export function DoctorResultsMap({
             ? error.message
             : 'The directory could not load listings for this map.'}
         </p>
+        <button
+          type="button"
+          className="mt-5 rounded-control bg-civic-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-civic-600"
+          onClick={onRetry}
+        >
+          Try again
+        </button>
       </section>
     );
   }
@@ -94,9 +112,16 @@ export function DoctorResultsMap({
       </div>
 
       {mappedListings.length === 0 ? (
-        <p className="mt-6 rounded-lg bg-surface-muted px-4 py-3 text-sm text-ink-700">
-          No clinic coordinates are available for this search yet.
-        </p>
+        <div className="mt-6 rounded-lg border border-dashed border-ink-100 bg-surface-muted px-4 py-4 text-sm text-ink-700">
+          <p className="font-semibold text-ink-900">
+            No mappable clinic coordinates are available yet.
+          </p>
+          <p className="mt-2 leading-6">
+            {listings.length === 0
+              ? 'Try another city or switch to list view to check whether listings are available.'
+              : 'Switch to list view to review the listings that do not have clinic coordinates yet.'}
+          </p>
+        </div>
       ) : (
         <div className="mt-5 overflow-hidden rounded-lg border border-ink-100 bg-white">
           <MapContainer

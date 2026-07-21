@@ -9,6 +9,7 @@ interface DoctorResultsListProps {
   error: Error | null;
   selectedLabel: string;
   selectedCitySlug: string;
+  onRetry: () => void;
 }
 
 export function DoctorResultsList({
@@ -17,16 +18,21 @@ export function DoctorResultsList({
   error,
   selectedLabel,
   selectedCitySlug,
+  onRetry,
 }: DoctorResultsListProps) {
   if (!selectedCitySlug) {
     return (
       <section className="rounded-lg border border-dashed border-civic-100 bg-civic-50 p-6 sm:p-8">
+        <p className="text-sm font-semibold uppercase text-civic-700">
+          No city selected
+        </p>
         <h2 className="text-xl font-semibold text-civic-900">
-          Start with a city
+          Search first to see available listings.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-700">
-          Search suggestions include launch cities and neighbourhood areas. Pick
-          one to load matching family doctor listings.
+          Use the search field above to choose a city or area. Results will show
+          doctors, clinics, contact details, and the most recent accepting
+          confirmation.
         </p>
       </section>
     );
@@ -34,10 +40,16 @@ export function DoctorResultsList({
 
   if (isLoading) {
     return (
-      <section className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8">
+      <section
+        className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8"
+        aria-busy="true"
+      >
         <h2 className="text-xl font-semibold text-ink-900">
           Loading {selectedLabel || selectedCitySlug}
         </h2>
+        <p className="mt-2 text-sm text-ink-600">
+          Checking current listings and recent community reports.
+        </p>
         <div className="mt-6 grid gap-3">
           {[0, 1, 2].map((item) => (
             <div
@@ -61,6 +73,13 @@ export function DoctorResultsList({
             ? error.message
             : 'The directory could not load listings for this search.'}
         </p>
+        <button
+          type="button"
+          className="mt-5 rounded-control bg-civic-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-civic-600"
+          onClick={onRetry}
+        >
+          Try again
+        </button>
       </section>
     );
   }
@@ -82,17 +101,58 @@ export function DoctorResultsList({
       </div>
 
       {listings.length === 0 ? (
-        <p className="mt-6 rounded-lg bg-surface-muted px-4 py-3 text-sm text-ink-700">
-          No doctor listings are available for this search yet.
-        </p>
+        <EmptyResults selectedLabel={selectedLabel || selectedCitySlug} />
       ) : (
-        <div className="mt-5 divide-y divide-ink-100 overflow-hidden rounded-lg border border-ink-100 bg-white">
-          {listings.map((listing) => (
-            <DoctorResultRow key={listing.id} listing={listing} />
-          ))}
-        </div>
+        <>
+          {listings.length <= 3 ? (
+            <SparseResults
+              count={listings.length}
+              selectedLabel={selectedLabel || selectedCitySlug}
+            />
+          ) : null}
+          <div className="mt-5 divide-y divide-ink-100 overflow-hidden rounded-lg border border-ink-100 bg-white">
+            {listings.map((listing) => (
+              <DoctorResultRow key={listing.id} listing={listing} />
+            ))}
+          </div>
+        </>
       )}
     </section>
+  );
+}
+
+function EmptyResults({ selectedLabel }: { selectedLabel: string }) {
+  return (
+    <div className="mt-6 rounded-lg border border-dashed border-ink-100 bg-surface-muted px-4 py-4 text-sm text-ink-700">
+      <p className="font-semibold text-ink-900">
+        No doctor listings are available for {selectedLabel} yet.
+      </p>
+      <p className="mt-2 leading-6">
+        Try searching a nearby city or broader area. New listings can appear as
+        clinic data and community reports are added.
+      </p>
+    </div>
+  );
+}
+
+function SparseResults({
+  count,
+  selectedLabel,
+}: {
+  count: number;
+  selectedLabel: string;
+}) {
+  return (
+    <div className="mt-5 rounded-lg border border-civic-100 bg-civic-50 px-4 py-3 text-sm text-civic-900">
+      <p className="font-semibold">
+        {count === 1 ? '1 listing' : `${count} listings`} found for{' '}
+        {selectedLabel}.
+      </p>
+      <p className="mt-1 leading-6">
+        This city has sparse coverage. Check nearby areas and use the report
+        controls when you know a listing has changed.
+      </p>
+    </div>
   );
 }
 
