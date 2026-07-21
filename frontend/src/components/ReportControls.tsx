@@ -21,6 +21,10 @@ export function ReportControls({
   const confirmAccepting = useConfirmAcceptingMutation(doctorId);
   const reportChange = useStatusChangeMutation(doctorId);
   const isSaving = confirmAccepting.isPending || reportChange.isPending;
+  const feedback = lastError
+    ? errorMessage(lastError)
+    : pendingMessage(confirmAccepting.isPending, reportChange.isPending) ??
+      successMessage(lastAction);
 
   function handleConfirmAccepting() {
     setLastAction(null);
@@ -83,7 +87,7 @@ export function ReportControls({
         ].join(' ')}
         aria-live="polite"
       >
-        {lastError ? errorMessage(lastError) : successMessage(lastAction)}
+        {feedback}
       </p>
     </div>
   );
@@ -99,6 +103,18 @@ function successMessage(action: LastAction) {
   }
 
   return ' ';
+}
+
+function pendingMessage(isConfirming: boolean, isReportingChange: boolean) {
+  if (isConfirming) {
+    return 'Updating recency now...';
+  }
+
+  if (isReportingChange) {
+    return 'Submitting status change...';
+  }
+
+  return null;
 }
 
 function errorMessage(error: Error) {
