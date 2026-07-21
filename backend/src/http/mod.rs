@@ -9,6 +9,7 @@ pub mod status_change;
 pub mod validation;
 
 use axum::{routing::get, Router};
+use tower_http::services::{ServeDir, ServeFile};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -18,7 +19,6 @@ pub struct AppState {
 
 pub fn router(state: AppState) -> Router {
     Router::new()
-        .route("/", get(root))
         .route("/health", get(health::health_check))
         .route("/api/health", get(health::health_check))
         .route("/api/cities/search", get(city_search::search_cities))
@@ -38,10 +38,11 @@ pub fn router(state: AppState) -> Router {
             "/api/doctors/{doctor_id}/status-change",
             axum::routing::post(status_change::report_status_change),
         )
-        .fallback(error::not_found)
+        .fallback_service(static_frontend())
         .with_state(state)
 }
 
-async fn root() -> &'static str {
-    "Family Doctor Finder backend"
+fn static_frontend() -> ServeDir<ServeFile> {
+    ServeDir::new("frontend/dist").fallback(ServeFile::new("frontend/dist/index.html"))
 }
+
