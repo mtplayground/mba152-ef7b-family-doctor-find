@@ -36,8 +36,17 @@ export function DoctorDetailPage() {
 
   if (detail.isPending) {
     return (
-      <section className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8">
+      <section
+        className="rounded-lg border border-ink-100 bg-surface-raised p-6 shadow-sm sm:p-8"
+        aria-busy="true"
+      >
+        <p className="mb-3 text-sm font-semibold uppercase text-civic-700">
+          Loading listing
+        </p>
         <div className="h-8 w-64 animate-pulse rounded bg-surface-muted" />
+        <p className="mt-4 max-w-xl text-sm leading-6 text-ink-600">
+          Fetching contact details, clinic address, and report history.
+        </p>
         <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="h-72 animate-pulse rounded-lg bg-surface-muted" />
           <div className="h-72 animate-pulse rounded-lg bg-surface-muted" />
@@ -57,13 +66,22 @@ export function DoctorDetailPage() {
             ? detail.error.message
             : 'The directory could not load this doctor listing.'}
         </p>
-        <button
-          type="button"
-          className="mt-5 rounded-control bg-civic-700 px-4 py-2 text-sm font-semibold text-white"
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </button>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="rounded-control bg-civic-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-civic-600"
+            onClick={() => void detail.refetch()}
+          >
+            Try again
+          </button>
+          <button
+            type="button"
+            className="rounded-control border border-ink-100 bg-white px-4 py-2 text-sm font-semibold text-ink-700 transition hover:bg-civic-50 hover:text-civic-900"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </button>
+        </div>
       </section>
     );
   }
@@ -179,9 +197,15 @@ function DoctorDetailContent({
         </div>
 
         {detail.reportHistory.length === 0 ? (
-          <p className="mt-6 rounded-lg bg-surface-muted px-4 py-3 text-sm text-ink-700">
-            No availability reports have been recorded for this listing yet.
-          </p>
+          <div className="mt-6 rounded-lg border border-dashed border-ink-100 bg-surface-muted px-4 py-4 text-sm text-ink-700">
+            <p className="font-semibold text-ink-900">
+              No report history is available yet.
+            </p>
+            <p className="mt-2 leading-6">
+              Use the status controls above when you can confirm whether this
+              doctor is still accepting new patients.
+            </p>
+          </div>
         ) : (
           <ol className="mt-6 divide-y divide-ink-100 overflow-hidden rounded-lg border border-ink-100 bg-white">
             {detail.reportHistory.map((report) => (

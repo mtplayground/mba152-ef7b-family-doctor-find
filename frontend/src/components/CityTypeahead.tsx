@@ -108,17 +108,35 @@ export function CityTypeahead({
           ) : null}
 
           {search.isError ? (
-            <p className="px-4 py-3 text-sm text-service-red">
-              {search.error instanceof ApiError
-                ? search.error.message
-                : 'City search is unavailable.'}
-            </p>
+            <div className="grid gap-3 px-4 py-3">
+              <p className="text-sm font-semibold text-service-red">
+                City search is unavailable.
+              </p>
+              <p className="text-sm leading-6 text-ink-700">
+                {search.error instanceof ApiError
+                  ? search.error.message
+                  : 'Check your connection and try again.'}
+              </p>
+              <button
+                type="button"
+                className="w-fit rounded-control border border-service-red/30 bg-white px-3 py-2 text-xs font-semibold text-service-red transition hover:bg-service-red/10"
+                onClick={() => void search.refetch()}
+              >
+                Try again
+              </button>
+            </div>
           ) : null}
 
           {!search.isPending && !search.isError && results.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-ink-700">
-              No matching Canadian cities or areas found.
-            </p>
+            <div className="grid gap-1 px-4 py-3">
+              <p className="text-sm font-semibold text-ink-800">
+                No matching city or area found.
+              </p>
+              <p className="text-sm leading-6 text-ink-700">
+                Try a larger nearby city, a different spelling, or the province
+                abbreviation.
+              </p>
+            </div>
           ) : null}
 
           {results.length > 0 ? (
