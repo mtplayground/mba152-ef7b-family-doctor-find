@@ -1,5 +1,6 @@
 target/
 node_modules/
+dist/
 frontend/dist/
 .gh_token
 .database_url

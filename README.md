@@ -37,6 +37,16 @@ npm run build
 
 The frontend data layer uses a typed fetch client and React Query hooks for city search, doctor listings, doctor detail, and anonymous report submissions. Set `VITE_API_BASE_URL` for local cross-port development; leave it unset for same-origin deployment.
 
+## Self-Hosted Deployment
+
+Bare self-hosted deployment uses a static frontend bundle and the Rust/Axum backend binary. Build both with:
+
+```bash
+scripts/build-self-hosted.sh
+```
+
+The build artifact is written to `dist/self-hosted/`. See `docs/self-hosted.md` for environment variables, reverse proxy examples, migration notes, and the deployment checklist.
+
 ## Directory Conventions
 
 Backend code should keep HTTP routing, service logic, data access, and configuration in separate modules as the implementation grows. Frontend code should organize reusable UI separately from feature-specific screens and API/query code.
